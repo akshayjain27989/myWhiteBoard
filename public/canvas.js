@@ -16,7 +16,7 @@ let eraserColor ="white";
 let penWidth = pencilWidthElem.value;
 let eraserWidth = eraserWidthElem.value;
 
-let undoRedoTracker =[];//data
+let undoRedoTracker = [];//data
 let track =0;//represnt which action from tracker array
 
 let mouseDown = false;
@@ -52,8 +52,11 @@ canvas.addEventListener("mousemove",(e)=>{
         }
         socket.emit("drawStroke",data);
     //   drawStroke({
-        
-    //   })
+    //     x:e.clientX,
+    //         y:e.clientY,
+    //         color: eraserFlag ? eraserColor : penColor,
+    //         width : eraserFlag ? eraserWidth : penWidth
+    //    })
     }
     
 })
@@ -62,7 +65,9 @@ canvas.addEventListener("mouseup",(e)=>{
 
     let url = canvas.toDataURL();
     undoRedoTracker.push(url);
-    track = undoRedoTracker.length -1;
+    
+    track = undoRedoTracker.length - 1;
+    //console.log(track);
 
 })
 undo.addEventListener("click",(e)=>{
@@ -72,8 +77,13 @@ undo.addEventListener("click",(e)=>{
         trackValue:track,
         undoRedoTracker
     }
-    socket.emit("redUndo",data);
-    //undoRedoCanvas(trackObj);
+    socket.emit("redoUndo",data);
+    //console.log(track);
+    // let trackObj = {
+    //     trackValue:track,
+    //     undoRedoTracker
+    // }
+    // undoRedoCanvas(trackObj);
 
 
 })
@@ -84,9 +94,13 @@ redo.addEventListener("click",(e)=>{
         trackValue:track,
         undoRedoTracker
     }
-    socket.emit("redUndo",data);
+    socket.emit("redoUndo",data);
+    // let trackObj = {
+    //     trackValue:track,
+    //     undoRedoTracker
+    // }
 
-    //undoRedoCanvas(trackObj);
+    // undoRedoCanvas(trackObj);
 })
 
 function undoRedoCanvas(trackObj){
@@ -94,10 +108,11 @@ function undoRedoCanvas(trackObj){
     undoRedoTracker = trackObj.undoRedoTracker;
 
     let url = undoRedoTracker[track];
+    console.log(url);
     let img = new Image();//new Image ref  element
     img.src = url;
     img.onload = (e) =>{
-        tool.drawImage(img,0,0,canvas.width, canvas.height);
+        tool.drawImage(img , 0 , 0 , canvas.width , canvas.height);
     }
 }
 
